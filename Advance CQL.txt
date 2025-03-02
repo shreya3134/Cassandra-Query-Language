@@ -1,0 +1,139 @@
+CREATE KEYSPACE IF NOT EXISTS m_keyspace
+                WITH replication = {
+                  'class': 'SimpleStrategy',
+                  'replication_factor': 1
+               };
+
+USE m_keyspace;
+
+CREATE TABLE user_1 (
+                   user_id UUID PRIMARY KEY,
+                   name TEXT,
+                   fruits LIST<TEXT>
+               );
+
+select*from user_1;
+
+ INSERT INTO user_1 (user_id, fruits, name)
+              VALUES (uuid(),['Apple', 'Banana', 'Orange'], 'John');
+
+
+UPDATE user_1
+              SET fruits = fruits + ['Grapes']
+              WHERE user_id= 344e655f-35fd-4c76-bf24-dd0cd59792d2;
+
+2) set
+
+
+
+CREATE TABLE users_2 (
+    user_id UUID PRIMARY KEY,
+    name TEXT,
+    flowers SET<TEXT>
+);
+
+
+INSERT INTO users_2 (user_id, name, flowers)
+VALUES (uuid(), 'John', {'Rose', 'Tulip', 'Sunflower'});
+
+UPDATE users_2
+SET flowers = flowers + {'Daisy'}
+WHERE user_id= 8e76d5cc-bfa4-4b94-b3c8-d1b9bffb7f09;
+SELECT * FROM users_2;
+
+UPDATE users_2
+SET flowers = flowers - {'Tulip'}
+WHERE  user_id= 6f791d20-b686-456a-9e4a-a59c2888c5e9; 
+SELECT * FROM users_2;
+
+
+3)MAPS
+
+
+CREATE TABLE users_3(
+    user_id UUID PRIMARY KEY,
+    favorite_books MAP<TEXT, TEXT>,
+    name TEXT
+);
+
+INSERT INTO users_3(user_id,favorite_books, name)
+VALUES (uuid(), {'1984': 'George Orwell', 'Pride and Prejudice': 'Jane Austen', 'To Kill a Mockingbird': 'Harper Lee'}, 'Alice');
+SELECT*FROM users_3;
+
+UPDATE users_3
+SET favorite_books = favorite_books + {'The Catcher in the Rye': 'J.D. Salinger'}
+WHERE user_id =1a59a65b-7201-40d1-944d-1cc91ceeddb8;
+SELECT*FROM users_3;
+
+UPDATE users_3
+SET favorite_books = favorite_books - {'Pride and Prejudice'}
+WHERE  user_id =1a59a65b-7201-40d1-944d-1cc91ceeddb8;
+SELECT*FROM users_3;
+
+UPDATE users_3
+SET favorite_books['1984'] = 'Eric Arthur Blair'
+WHERE user_ id =1a59a65b-7201-40d1-944d-1cc91ceeddb8;
+SELECT*FROM users_3;
+
+
+SECONDARY INDEXES
+
+CREATE TABLE users (
+    user_id UUID PRIMARY KEY,
+    name TEXT,
+    email TEXT,
+    age INT
+);
+
+
+INSERT INTO users (user_id, name, email, age) VALUES (uuid(), 'Alice', 'alice@example.com', 30);
+INSERT INTO users (user_id, name, email, age) VALUES (uuid(), 'Bob', 'bob@example.com', 25);
+INSERT INTO users (user_id, name, email, age) VALUES (uuid(), 'Charlie', 'charlie@example.com', 35);
+
+CREATE INDEX email_idx ON users (email);
+CREATE INDEX age_idx ON users (age);
+
+
+SELECT * FROM users WHERE email = 'alice@example.com';
+
+UPDATE users SET age = 31 WHERE user_id = <the_user_id_from_previous_query>;
+
+DELETE FROM users WHERE user_id = <the_user_id_from_previous_query>;
+
+SELECT * FROM system.indexes WHERE table_name = 'users'; 
+
+SELECT * FROM system_schema.indexes WHERE table_name = 'users';
+
+
+
+BATCH OPERATIONS 
+CREATE TABLE emp (
+  emp_id INT,
+  emp_city TEXT,
+  emp_name TEXT,
+  emp_phone BIGINT,  -- Changed from INT to BIGINT
+  emp_sal INT,
+  PRIMARY KEY (emp_id)
+);
+
+
+INSERT INTO emp (emp_id, emp_city, emp_name, emp_phone, emp_sal)
+VALUES (1, 'Hyderabad', 'ram', 9848022338, 50000);
+
+INSERT INTO emp (emp_id, emp_city, emp_name, emp_phone, emp_sal)
+VALUES (2, 'Hyderabad', 'robin', 9848022339, 50000);
+
+INSERT INTO emp (emp_id, emp_city, emp_name, emp_phone, emp_sal)
+VALUES (3, 'Chennai', 'ramhan', 9848022330, 20000);
+
+
+BEGIN BATCH
+   INSERT INTO emp (emp_id, emp_city, emp_name, emp_phone, emp_sal)
+   VALUES (4, 'Pune', 'rajeev', 9848022331, 30000);
+   
+   UPDATE emp SET emp_sal = 50000 WHERE emp_id = 3;
+   
+   DELETE emp_city FROM emp WHERE emp_id = 2;
+APPLY BATCH;
+
+
