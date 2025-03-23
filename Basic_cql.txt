@@ -1,0 +1,91 @@
+docker exec -it loving_sutherland cqlsh ( TO OPEN CQLSH )
+
+
+Create Keyspace .
+
+CREATE KEYSPACE IF NOT EXISTS my_keyspace 
+WITH replication = {
+  'class': 'SimpleStrategy', 
+  'replication_factor': 1
+};
+
+USE my_keyspace;
+
+CREATE TABLE IF NOT EXISTS users (
+    user_id UUID PRIMARY KEY, 
+    username TEXT, 
+    email TEXT, 
+    age INT
+);
+
+
+INSERT INTO users (user_id, username, email, age) VALUES (uuid(), 'john_doe', 'john.doe@example.com', 28);
+INSERT INTO users (user_id, username, email, age) VALUES (uuid(), 'jane_smith', 'jane.smith@example.com', 34);
+INSERT INTO users (user_id, username, email, age) VALUES (uuid(), 'alice_williams', 'alice.williams@example.com', 22);
+INSERT INTO users (user_id, username, email, age) VALUES (uuid(), 'bob_jones', 'bob.jones@example.com', 41);
+INSERT INTO users (user_id, username, email, age) VALUES (uuid(), 'carol_taylor', 'carol.taylor@example.com', 29);
+INSERT INTO users (user_id, username, email, age) VALUES (uuid(), 'david_lee', 'david.lee@example.com', 36);
+INSERT INTO users (user_id, username, email, age) VALUES (uuid(), 'eva_brown', 'eva.brown@example.com', 30);
+INSERT INTO users (user_id, username, email, age) VALUES (uuid(), 'frank_martin', 'frank.martin@example.com', 26);
+INSERT INTO users (user_id, username, email, age) VALUES (uuid(), 'grace_davis', 'grace.davis@example.com', 32);
+INSERT INTO users (user_id, username, email, age) VALUES (uuid(), 'henry_clark', 'henry.clark@example.com', 38);
+
+SELECT * FROM users;
+
+SELECT username, email FROM users;
+
+SELECT * FROM users WHERE user_id = 29c58990-d36f-407f-8f8d-e2489e6fc9a2; -- UUID will be diff , every time so select accordingly .
+
+SELECT * FROM users LIMIT 5;
+
+SELECT age FROM users ALLOW FILTERING; ( Shows only particular age column )
+
+CREATE INDEX ON users (age); ( Search particular age )
+
+SELECT * FROM users WHERE age = 22;
+
+SELECT * FROM users WHERE user_id IN (
+    3301b2ca-97e4-4c48-a943-ec66d024ac3c,
+    16302c11-2ed5-4a85-8329-8bb8c65f5636, 
+    77343e67-8cd9-4153-b450-1d8712942009
+);
+
+ SELECT * FROM users WHERE age = 30 ALLOW FILTERING;
+
+SELECT * FROM users WHERE user_id = 77343e67-8cd9-4153-b450-1d8712942009 AND age = 41;
+
+
+
+UPDATE COMMANDS 
+
+
+UPDATE users SET email = 'zaid@example.com'  WHERE user_id = 5947ff42-1121-44ed-bb6f-65140399e913; 
+
+UPDATE users
+SET email = 'new.jane.smith@example.com', age = 35
+WHERE user_id = 6e0d8f78-2f71-498b-9604-65206cb90caf;
+
+DELETE COMMAND 
+
+
+DELETE FROM my_keyspace.users WHERE user_id = 77343e67-8cd9-4153-b450-1d8712942009; ( To delete entire row )
+
+DELETE username FROM my_keyspace.users 
+WHERE user_id = 5947ff42-1121-44ed-bb6f-65140399e913; ( To delete a specific element in a column )
+
+DROP COMMAND
+
+
+DROP TABLE my_keyspace.users;
+
+DROP KEYSPACE my_keyspace;
+
+
+
+
+
+
+
+
+
+
